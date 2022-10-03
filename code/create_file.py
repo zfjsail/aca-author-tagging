@@ -1,5 +1,6 @@
 import codecs
 import json
+from tqdm import tqdm
 
 
 #def create_author_paper():
@@ -47,7 +48,7 @@ def create_author_press():
 
     dict_result = {}
     with codecs.open('./raw_data/papers.txt',"r",'utf-8') as f:
-        for eachLine in f:
+        for eachLine in tqdm(f):
             if eachLine.startswith('#index'):
                 i = int(eachLine[6:])
                 #dict_result.setdefault(i,[])
@@ -71,7 +72,7 @@ def create_author_indx_citeindx():
 
     author_indx_citeindx = {}
     with codecs.open('./raw_data/papers.txt',"r",'utf-8') as f:
-        for eachLine in f:
+        for eachLine in tqdm(f):
             if eachLine.startswith('#index'):
                 i = int(eachLine[6:])
                 i = str(i)
@@ -96,7 +97,7 @@ def create_indx_paper_author():
     indx_paper_author = {}
 
     with codecs.open('./raw_data/papers.txt',"r",'utf-8') as f:
-        for eachLine in f:
+        for eachLine in tqdm(f):
             if eachLine.startswith('#index'):
                 i = int(eachLine[6:])
                 indx_paper_author.setdefault(i,[])
@@ -219,7 +220,7 @@ def findCooperator():
     with codecs.open('./raw_data/papers.txt',"r",'utf-8') as f:
 
         # author_for_title = []
-        for eachLine in f:
+        for eachLine in tqdm(f):
             if eachLine.startswith("#@"):
                 Author = eachLine[2:-1].strip().split(',')
                 for j in range(len(Author)):

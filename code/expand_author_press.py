@@ -1,10 +1,13 @@
 import codecs
 import json
 import random
+from tqdm import tqdm
 
 def shuffle_list(paper_list,number):
     random.shuffle(paper_list)
     return paper_list[:number]
+
+    
 def expand_by_coop(flag):
     with codecs.open("./raw_data/author_press.json","r","utf-8") as fid:
         author_press = json.load(fid)
@@ -86,7 +89,7 @@ def read_paper():
     indx_press = {}
 
     with codecs.open("./raw_data/papers.txt","r","utf-8") as fid:
-        for eachLine in fid:
+        for eachLine in tqdm(fid):
             if eachLine.startswith('#index'):
                 i = int(eachLine[6:])
                 indx_press.setdefault(str(i),[])

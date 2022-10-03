@@ -3,12 +3,13 @@ import networkx as nx
 import json
 import codecs
 from collections import Counter
+from tqdm import tqdm
 
 
 def create_cite_net(author_indx_citeindx):
     print ("create cite net ...")
     cite_graph = nx.Graph()
-    for author in author_indx_citeindx.keys():
+    for author in tqdm(author_indx_citeindx.keys()):
         for indx,citeindx in author_indx_citeindx[author].items():
             cite_graph.add_node(indx)
             for v in citeindx:
@@ -19,7 +20,7 @@ def find_neighbors(cite_graph):
 
     print ("find neighbors ....")
     indx_neighbors = {}
-    for node in cite_graph.nodes():
+    for node in tqdm(cite_graph.nodes()):
         indx_neighbors.setdefault(node,[]).extend(list(nx.all_neighbors(cite_graph,node)))
     with codecs.open("./raw_data/indx_neighbors.json","w","utf-8") as fid:
         json.dump(indx_neighbors,fid)

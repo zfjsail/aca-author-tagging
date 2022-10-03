@@ -176,7 +176,7 @@ def predict_n_interest(author_paper,interest_seq,dictionary,corpus,tfidf_model,l
 
     #with codecs.open("./raw_data/exclude_author.txt","w","utf-8") as fid:
     #    fid.write("\t".join(exclude_author))
-    print 1000-flag
+    print(1000-flag)
     return predict_author_interest,predict_author_interest_score,flag
 
 

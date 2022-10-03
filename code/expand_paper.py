@@ -58,7 +58,7 @@ def expand_by_author(flag):
 
     with codecs.open("./raw_data/indx_paper_author.json","r","utf-8") as fid:
         indx_paper_author = json.load(fid)
-    print len(author_indx_citeindx)
+    print(len(author_indx_citeindx))
 
 
 

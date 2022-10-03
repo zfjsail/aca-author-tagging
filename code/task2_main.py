@@ -1,4 +1,5 @@
 from __future__ import division
+import os
 import codecs
 import json
 import author_similarity
@@ -95,9 +96,9 @@ def task2_main(flag_test_vali ):
     #author_train = list(set(t_author_paper.keys())-set(author_vali))
     #print len(author_train)
     author_test = p_author_paper.keys()
-    (author_train,author_vali) = split_dataset(t_author_paper.keys())
+    (author_train,author_vali) = split_dataset(list(t_author_paper.keys()))
 
-
+    os.makedirs("./task2_out",exist_ok=True)
     p_author_interest_score_press = press_model.press_main(author_train,author_vali,author_test,author_interest,flag_test_vali)
     with codecs.open("./task2_out/p_author_interest_score_press.json" + flag_test_vali,"w","utf-8") as fid:
         json.dump(p_author_interest_score_press,fid,ensure_ascii=False)
@@ -304,11 +305,11 @@ if __name__ == "__main__":
     with codecs.open("./raw_data/author_interest.json","r","utf-8") as fid:
         author_interest = json.load(fid)
 
-    flag = 'test'
+    flag = 'vali'
 
     #single_test()
     if flag == 'vali':
-        #task2_main(flag)
+        # task2_main(flag)
         p_author_interest = combine_result_file(flag)
         print_validation_result(p_author_interest,author_interest)
     if flag == 'test':
