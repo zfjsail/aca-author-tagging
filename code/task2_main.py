@@ -4,6 +4,7 @@ import codecs
 import json
 import author_similarity
 import lsi_model
+import sbert
 import press_model
 import lsi_author
 #import lsi_press
@@ -265,7 +266,7 @@ def combine_5(p_interest_interest,p_press_interest,p_author_interest,p_indx_simi
         interest.append(v[0])
     return interest
 
-def single_test():
+def single_test(model="lsi"):
 
     with codecs.open("./raw_data/t_author_paper.json","r","utf-8") as fid:
         t_author_paper = json.load(fid)
@@ -273,21 +274,23 @@ def single_test():
     with codecs.open("./raw_data/author_interest.json","r","utf-8") as fid:
         author_interest = json.load(fid)
 
-    with codecs.open("./raw_data/p_author_paper.json","r","utf-8") as fid:
+    # with codecs.open("./raw_data/p_author_paper.json","r","utf-8") as fid:
+    with codecs.open("./raw_data/p_author_paper_final.json","r","utf-8") as fid:
         p_author_paper = json.load(fid)
 
     with codecs.open("./raw_data/t_author_press.json","r","utf-8") as fid:
         t_author_press = json.load(fid)
 
-    with codecs.open("./raw_data/p_author_press.json","r","utf-8") as fid:
+    with codecs.open("./raw_data/p_author_press_final.json","r","utf-8") as fid:
         p_author_press = json.load(fid)
 
-    author_vali = []
-    with codecs.open("./raw_data/exclude_author.txt","r","utf-8") as fid:
-        for line in fid:
-            author_vali = line.strip().split('\t')
+    # author_vali = []
+    # with codecs.open("./raw_data/exclude_author.txt","r","utf-8") as fid:
+    #     for line in fid:
+    #         author_vali = line.strip().split('\t')
     author_test = p_author_press.keys()
-    (author_train,author_vali) = split_dataset(t_author_press.keys())
+    # (author_train,author_vali) = split_dataset(t_author_press.keys())
+    (author_train,author_vali) = split_dataset(list(t_author_paper.keys()))
     author_train = list(set(t_author_press.keys())-set(author_vali))
 
     #p_author_interest_score_author = lsi_author.author_main(author_train,author_vali,t_author_paper,author_interest,'vali')
@@ -296,18 +299,44 @@ def single_test():
     #p_author_interest_score_indx_similarity  = author_similarity.similarity_by_indx(author_train,author_vali,author_test,author_interest,'vali')
     #p_author_interest_score_indx_similarity  = author_similarity.similarity_by_interest_press(author_train,author_vali,author_test,author_interest,'vali')
     #p_author_interest_score_indx_similarity  = interest_press_kl.similarity_by_interest_press(author_train,author_vali,author_test,author_interest,'vali')
-    lsi_model_2.lsi_main(t_author_paper,author_interest,p_author_paper,author_train,author_vali,author_test,'vali')
+    if model == "lsi":
+        results = lsi_model.lsi_main(t_author_paper,author_interest,p_author_paper,author_train,author_vali,author_test,'test')
+    elif model == "sbert":
+        results = sbert.sbert_main(t_author_paper,author_interest,p_author_paper,author_train,author_vali,author_test,'test')
+    else:
+        raise NotImplementedError
+    # print(results)
 
+    author_list = author_test
+    author_interest_score = {}
+    for author in author_list:
+        interest_s = {}
+        for k,v in results[author].items():
+            interest_s.setdefault(k,0)
+            interest_s[k] += v
+        interest_s = sorted(interest_s.items(),key=lambda x:x[1],reverse=True)
+        author_interest_score[author] = interest_s[:5]
+    
+    with open("task2_out/author_interest_{}_only.json".format(model),"w") as wf:
+        wf.write("<task2>\n")
+        wf.write("authorname	interest1	interest2	interest3	interest4	interest5\n")
+        for author,interest in author_interest_score.items():
+            wf.write(author)
+            for i in interest:
+                wf.write("\t"+i[0])
+            wf.write("\n")
+        wf.write("</task2>")
 
 
 if __name__ == "__main__":
-
+    os.environ["TOKENIZERS_PARALLELISM"]="true"
     with codecs.open("./raw_data/author_interest.json","r","utf-8") as fid:
         author_interest = json.load(fid)
 
-    flag = 'vali'
+    flag = 'test'
 
-    #single_test()
+    single_test(model="sbert")
+    raise
     if flag == 'vali':
         # task2_main(flag)
         p_author_interest = combine_result_file(flag)

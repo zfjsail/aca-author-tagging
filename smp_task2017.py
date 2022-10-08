@@ -214,4 +214,7 @@ def eval_task2_only(pred_file):
 
 
 if __name__ == "__main__":
-    eval_task2_only("task2_out/10_08_4_2.0.txt")
+    # eval_task2_only("task2_out/10_08_4_2.0.txt")
+    # eval_task2_only("task2_out/author_interest_lsi_only.json")
+    # eval_task2_only("task2_out/author_interest_sbert_only.json")
+    eval_task2_only("../oag-author-tagging/out/task2_sbert_sim.txt")
